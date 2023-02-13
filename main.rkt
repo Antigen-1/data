@@ -5,17 +5,18 @@
 (define-syntax-rule
   (define-data
     name
-    (init ...)
+    (share ...)
+    (primitive ...)
     ((operation op) ...)
     ((abstraction ab) ...))
   (module name racket/base
     (module represent racket/base
-      (require init ...)
+      (require share ... primitive ...)
       (provide operation ...)
       (define operation op)
       ...)
     (module abstract racket/base
-      (require (submod ".." represent))
+      (require (submod ".." represent) share ...)
       (provide abstraction ...)
       (define abstraction ab)
       ...)
