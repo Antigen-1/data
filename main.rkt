@@ -20,7 +20,7 @@
            #`(begin
                (splicing-let () (local-require primitive ...) (define rp-name rp-body) ...)
                (splicing-let () (define ab-name ab-body) ...)
-               (provide (for-space #f rp-name ... ab-name ...)
-                        (for-space #,rp-id rp-name ...)
-                        (for-space #,ab-id ab-name ...))
+               (provide (for-space #,rp-id rp-name ...)
+                        (for-space #,ab-id ab-name ...)
+                        (for-space #f rp-name ... ab-name ...))
                ))))))
