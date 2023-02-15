@@ -3,24 +3,14 @@
 (provide (all-defined-out))
 
 (define-syntax (define-data stx)
-  (syntax-case stx (lib operation abstraction)
+  (syntax-case stx (lib representation abstraction)
       ((_ name
-          (lib init (primitive ...))
-          (operation (op-name op-body) ...)
+          (lib primitive ...)
+          (representation (rp-name rp-body) ...)
           (abstraction (ab-name ab-body) ...))
-       (with-syntax (((op-alias ...) (generate-temporaries #'(op-name ...))))
-         #'(module name racket/base
-             (module represent init
-               (require primitive ...)
-               (provide op-alias ...)
-               (define op-alias op-body)
-               ...)
-             (module abstract init
-               (require (rename-in (submod ".." represent)
-                                   (op-alias op-name)
-                                   ...))
-               (provide (all-from-out (submod ".." represent)) ab-name ...)
-               (define ab-name ab-body)
-               ...)
-             (require 'abstract)
-             (provide (all-from-out 'abstract)))))))
+       #'(begin
+           (define-values (rp-name ...) (let () (local-require primitive ...) (values rp-body ...)))
+           (define-values (ab-name ...) (values ab-body ...))
+           (provide (for-space #f rp-name ... ab-name ...)
+                    (for-space name (for-space representation rp-name ...) (for-space abstraction ab-name ...)))
+           ))))
