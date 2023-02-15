@@ -12,7 +12,8 @@
              (add-rp (lambda (stx) ((make-interned-syntax-introducer 'representation) stx 'add)))
              (add-ab (lambda (stx) ((make-interned-syntax-introducer 'abstraction) stx 'add))))
          (with-syntax (((rp-name ...) (map (compose add-rp add-nm) (syntax->list #'(rp-name ...))))
-                       ((ab-name ...) (map (compose add-ab add-rp add-nm) (syntax->list #'(ab-name ...)))))
+                       ((ab-name ...) (map (compose add-ab add-nm) (syntax->list #'(ab-name ...))))
+                       ((ab-body ...) (map add-nm (syntax->list #'(ab-body ...)))))
            #'(begin
                (define-values (rp-name ...) (let () (local-require primitive ...) (values rp-body ...)))
                (define-values (ab-name ...) (values ab-body ...))
