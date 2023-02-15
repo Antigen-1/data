@@ -1,5 +1,5 @@
 #lang racket/base
-(require (for-syntax racket/base))
+(require (for-syntax racket/base) racket/splicing)
 (provide (all-defined-out))
 
 (define-syntax (define-data stx)
@@ -16,8 +16,8 @@
                        ((ab-name ...) (map (compose add-ab add-nm) (syntax->list #'(ab-name ...))))
                        ((ab-body ...) (map (compose add-ab add-rp add-nm) (syntax->list #'(ab-body ...)))))
            #'(begin
-               (define-values (rp-name ...) (let () (local-require primitive ...) (values rp-body ...)))
-               (define-values (ab-name ...) (values ab-body ...))
+               (splicing-let () (local-require primitive ...) (define rp-name rp-body) ...)
+               (splicing-let () (define ab-name ab-body) ...)
                (provide (for-space #f rp-name ... ab-name ...)
                         (for-space name (for-space representation rp-name ...) (for-space abstraction ab-name ...)))
                ))))))
