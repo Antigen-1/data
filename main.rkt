@@ -16,8 +16,10 @@
               (add-rp (lambda (stx) ((make-interned-syntax-introducer rp-id) stx 'add)))
               (add-ab (lambda (stx) ((make-interned-syntax-introducer ab-id) stx 'add))))
          (with-syntax (((rp-space-name ab-space-name tmp-space-name) (map (lambda (sym) (datum->syntax #'stx sym)) (list rp-id ab-id tmp-id)))
-                       ((rp-name ... rp-body ...) (map (compose add-rp add-tmp) (syntax->list #'(rp-name ... rp-body ...))))
-                       ((ab-name ... ab-body ...) (map (compose add-ab add-rp) (syntax->list #'(ab-name ... ab-body ...)))))
+                       ((rp-name ...) (map add-rp (syntax->list #'(rp-name ...))))
+                       ((rp-body ...) (map (compose add-rp add-tmp) (syntax->list #'(rp-body ...))))
+                       ((ab-name ...) (map add-ab (syntax->list #'(ab-name ...))))
+                       ((ab-body ...) (map (compose add-ab add-rp) (syntax->list #'(ab-body ...)))))
           #'(begin
               (require (for-space tmp-space-name primitive ...))
               (define rp-name rp-body) ...
