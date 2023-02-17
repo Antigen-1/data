@@ -1,7 +1,9 @@
 #lang racket/base
-(require (for-syntax racket/base) racket/splicing)
+(require (for-syntax racket/base))
 (provide (all-defined-out))
 
+;;there are three spaces created in this macro:`<name>:representation`, `<name>:abstaction` and `<name>:temporary-space`.
+;;the `<name>:temporary-space` should not be used outside this macro, because its behaviour is still unstable
 (define-syntax (define-data stx)
   (syntax-case stx (lib representation abstraction)
       ((_ name
@@ -11,7 +13,7 @@
        (let* ((make-id (lambda (str) (string->symbol (format "~a:~a" (syntax->datum #'name) str))))
               (rp-id (make-id "representation"))
               (ab-id (make-id "abstraction"))
-              (tmp-id (string->symbol (symbol->string (gensym "tmp"))))
+              (tmp-id (make-id "temporary-space"))
               (add-tmp (lambda (stx) ((make-interned-syntax-introducer tmp-id) stx 'add)))
               (add-rp (lambda (stx) ((make-interned-syntax-introducer rp-id) stx 'add)))
               (add-ab (lambda (stx) ((make-interned-syntax-introducer ab-id) stx 'add))))
@@ -28,3 +30,8 @@
                        (for-space ab-space-name ab-name ...)
                        (for-space #f rp-name ... ab-name ...))
               ))))))
+
+(define-syntax (ref-in-space stx)
+  (syntax-case stx ()
+    ((_ space name)
+     ((make-interned-syntax-introducer (syntax->datum #'space)) #'name 'add))))
